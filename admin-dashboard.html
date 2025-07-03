@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bingwa Sokoni Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .header { 
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #006400;
+            margin: 0;
+        }
+        .subtitle {
+            color: #666;
+            margin: 5px 0 0;
+        }
+        .tabs { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab { 
+            padding: 12px 24px; 
+            background: #e9ecef; 
+            border: none; 
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #666;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+        .tab.active { 
+            background: #006400; 
+            color: white; 
+        }
+        .content { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .search-box input {
+            padding: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+        .search-box button {
+            padding: 8px 16px;
+            background: #006400;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-box button:last-child {
+            background: #6c757d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap;
+        }
+        th {
+            background: #f8f9fa;
+            color: #006400;
+        }
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .loading.active {
+            display: block;
+        }
+        .error {
+            display: none;
+            background: #ffe6e6;
+            color: #dc3545;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error.active {
+            display: block;
+        }
+        .success {
+            display: none;
+            background: #e6ffe6;
+            color: #006400;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success.active {
+            display: block;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            color: #006400;
+            margin: 0 0 10px 0;
+        }
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            color: #333;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .tabs {
+                flex-direction: column;
+            }
+            .tab {
+                width: 100%;
+            }
+            .search-box {
+                flex-direction: column;
+            }
+            .search-box input,
+            .search-box button {
+                width: 100%;
+            }
+            table {
+                font-size: 14px;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .settings-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .settings-card h3 {
+            color: #006400;
+            margin: 0 0 15px 0;
+            font-size: 18px;
+        }
+        .status-indicator {
+            margin-bottom: 15px;
+        }
+        .status-label {
+            color: #666;
+            margin-right: 10px;
+        }
+        .status-value {
+            font-weight: bold;
+            color: #006400;
+        }
+        .setting-description {
+            color: #666;
+            font-size: 14px;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+        .maintenance-actions {
+            display: grid;
+            gap: 10px;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .action-btn.cleanup {
+            background: #dc3545;
+            color: white;
+        }
+        .action-btn.optimize {
+            background: #28a745;
+            color: white;
+        }
+        .action-btn.backup {
+            background: #007bff;
+            color: white;
+        }
+        .action-btn.refresh {
+            background: #6c757d;
+            color: white;
+        }
+        .action-btn.health {
+            background: #17a2b8;
+            color: white;
+        }
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .icon {
+            font-size: 16px;
+        }
+        .stats-grid {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .stat-label {
+            color: #666;
+        }
+        .stat-value {
+            font-weight: bold;
+            color: #333;
+        }
+        .health-indicators {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .health-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .health-label {
+            color: #666;
+        }
+        .health-value {
+            font-weight: bold;
+        }
+        .health-value.healthy {
+            color: #28a745;
+        }
+        .health-value.warning {
+            color: #ffc107;
+        }
+        .health-value.error {
+            color: #dc3545;
+        }
+        .redemption-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .redemption-filters select,
+        .redemption-filters input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 200px;
+        }
+        .redemption-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        .redemption-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .redemption-id {
+            font-weight: bold;
+            color: #006400;
+        }
+        .redemption-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .redemption-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .redemption-status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        .redemption-status.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .redemption-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .redemption-detail {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .detail-value {
+            font-weight: bold;
+            color: #333;
+        }
+        .redemption-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .redemption-actions button {
+            flex: 1;
+        }
+        .redemption-actions .approve {
+            background: #28a745;
+            color: white;
+        }
+        .redemption-actions .reject {
+            background: #dc3545;
+            color: white;
+        }
+        .redemption-actions .cancel {
+            background: #6c757d;
+            color: white;
+        }
+        .redemption-note {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .redemption-history {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bingwa Sokoni Admin Dashboard</h1>
+            <div class="subtitle">Agent Management System</div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <p id="totalRevenue">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Transactions</h3>
+                <p id="totalTransactions">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Customers</h3>
+                <p id="totalCustomers">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Average Transaction</h3>
+                <p id="averageTransaction">Loading...</p>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('users')">Users</button>
+            <button class="tab" onclick="showTab('redemptions')">Redemptions</button>
+            <button class="tab" onclick="showTab('promotions')">Promotions</button>
+            <button class="tab" onclick="showTab('settings')">Settings</button>
+        </div>
+        
+        <div class="content">
+            <div id="users" class="tab-content active">
+                <h2>All Users</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by phone number...">
+                    <button onclick="searchUsers()">Search</button>
+                    <button onclick="clearSearch()">Clear</button>
+                </div>
+                <div id="searchResults"></div>
+                <div id="allUsers">
+                    <!-- Users will be loaded here -->
+                </div>
+                <div id="usersLoading" class="loading">Loading users...</div>
+                <div id="usersError" class="error"></div>
+            </div>
+            
+            <div id="redemptions" class="tab-content">
+                <h2>Redemption Requests</h2>
+                <div class="redemption-filters">
+                    <select id="redemptionStatus" onchange="filterRedemptions()">
+                        <option value="pending">Pending Requests</option>
+                        <option value="approved">Approved Requests</option>
+                        <option value="rejected">Rejected Requests</option>
+                        <option value="all">All Requests</option>
+                    </select>
+                    <input type="date" id="redemptionDate" onchange="filterRedemptions()" placeholder="Filter by date">
+                    <button onclick="clearRedemptionFilters()" class="action-btn">Clear Filters</button>
+                </div>
+                <div id="redemptionList">
+                    <!-- Redemptions will be loaded here -->
+                </div>
+                <div id="redemptionsLoading" class="loading">Loading redemptions...</div>
+                <div id="redemptionsError" class="error"></div>
+                <div id="redemptionsSuccess" class="success"></div>
+            </div>
+            
+            <div id="promotions" class="tab-content">
+                <h2>Send Promotional Message</h2>
+                <textarea id="promoMessage" placeholder="Enter your message here..." style="width: 100%; min-height: 100px; margin-bottom: 10px;"></textarea>
+                <button onclick="sendPromotionalMessage()">Send to All Users</button>
+                <div id="promoLoading" class="loading">Sending message...</div>
+                <div id="promoError" class="error"></div>
+                <div id="promoSuccess" class="success"></div>
+            </div>
+            
+            <div id="settings" class="tab-content">
+                <h2>System Settings</h2>
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>Referral Program</h3>
+                        <div class="status-indicator">
+                            <span class="status-label">Current Status:</span>
+                            <span id="referralStatus" class="status-value">Loading...</span>
+                        </div>
+                        <button onclick="toggleReferralProgram()" id="referralToggle" class="action-btn">Loading...</button>
+                        <div class="setting-description">
+                            Controls whether users can earn points from referrals. When paused, no new referral points will be awarded.
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Database Maintenance</h3>
+                        <div class="maintenance-actions">
+                            <button onclick="cleanupStatusBroadcast()" class="action-btn cleanup">
+                                <span class="icon">🗑️</span>
+                                Clean Status Broadcast
+                            </button>
+                            <button onclick="optimizeDatabase()" class="action-btn optimize">
+                                <span class="icon">⚡</span>
+                                Optimize Database
+                            </button>
+                            <button onclick="backupDatabase()" class="action-btn backup">
+                                <span class="icon">💾</span>
+                                Create Backup
+                            </button>
+                        </div>
+                        <div class="setting-description">
+                            Database maintenance tools to keep your system running smoothly.
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>System Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Database Size</span>
+                                <span id="dbSize" class="stat-value">Loading...</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Last Backup</span>
+                                <span id="lastBackup" class="stat-value">Loading...</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Last Optimization</span>
+                                <span id="lastOptimization" class="stat-value">Loading...</span>
+                            </div>
+                        </div>
+                        <button onclick="refreshStats()" class="action-btn refresh">
+                            <span class="icon">🔄</span>
+                            Refresh Stats
+                        </button>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>System Health</h3>
+                        <div class="health-indicators">
+                            <div class="health-item">
+                                <span class="health-label">Database Connection</span>
+                                <span id="dbConnection" class="health-value">Checking...</span>
+                            </div>
+                            <div class="health-item">
+                                <span class="health-label">WhatsApp Connection</span>
+                                <span id="whatsappConnection" class="health-value">Checking...</span>
+                            </div>
+                            <div class="health-item">
+                                <span class="health-label">Payment Gateway</span>
+                                <span id="paymentGateway" class="health-value">Checking...</span>
+                            </div>
+                        </div>
+                        <button onclick="checkSystemHealth()" class="action-btn health">
+                            <span class="icon">🏥</span>
+                            Check Health
+                        </button>
+                    </div>
+                </div>
+                <div id="settingsLoading" class="loading">Updating settings...</div>
+                <div id="settingsError" class="error"></div>
+                <div id="settingsSuccess" class="success"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2024 Emmkash Tech. All rights reserved.
+        </div>
+    </div>
+    
+    <script>
+        // Show loading state
+        function showLoading(elementId) {
+            document.getElementById(elementId).classList.add('active');
+        }
+
+        // Hide loading state
+        function hideLoading(elementId) {
+            document.getElementById(elementId).classList.remove('active');
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.add('active');
+            setTimeout(() => {
+                errorElement.classList.remove('active');
+            }, 5000);
+        }
+
+        // Show success message
+        function showSuccess(elementId, message) {
+            const successElement = document.getElementById(elementId);
+            successElement.textContent = message;
+            successElement.classList.add('active');
+            setTimeout(() => {
+                successElement.classList.remove('active');
+            }, 5000);
+        }
+
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            
+            // Load data for the selected tab
+            if (tabName === 'users') {
+                loadUsers();
+            } else if (tabName === 'redemptions') {
+                loadRedemptions();
+            } else if (tabName === 'settings') {
+                loadSettings();
+            }
+        }
+        
+        async function loadUsers() {
+            showLoading('usersLoading');
+            try {
+                const response = await fetch('/admin/users');
+                const result = await response.json();
+                
+                const allUsers = document.getElementById('allUsers');
+                if (result.users && result.users.length > 0) {
+                    let html = '<table><tr><th>Username</th><th>Phone</th><th>Referral Code</th><th>Referrals</th><th>Total Spent</th><th>Points</th><th>Actions</th></tr>';
+                    result.users.forEach(user => {
+                        html += '<tr>';
+                        html += '<td>' + escapeHtml(user.username) + '</td>';
+                        html += '<td>' + escapeHtml(user.phone) + '</td>';
+                        html += '<td>' + escapeHtml(user.referral_code) + '</td>';
+                        html += '<td>' + user.total_referrals + '</td>';
+                        html += '<td>KES ' + user.total_spent + '</td>';
+                        html += '<td>' + user.total_points + '</td>';
+                        html += '<td><button onclick="deleteUser(\'' + user.phone + '\')">Delete</button></td>';
+                        html += '</tr>';
+                    });
+                    html += '</table>';
+                    allUsers.innerHTML = html;
+                } else {
+                    allUsers.innerHTML = '<p>No users found</p>';
+                }
+            } catch (error) {
+                showError('usersError', 'Error loading users: ' + error.message);
+            } finally {
+                hideLoading('usersLoading');
+            }
+        }
+        
+        async function loadRedemptions() {
+            showLoading('redemptionsLoading');
+            try {
+                const status = document.getElementById('redemptionStatus').value;
+                const date = document.getElementById('redemptionDate').value;
+                
+                const response = await fetch(`/admin/redemptions?status=${status}&date=${date}`);
+                const result = await response.json();
+                
+                const redemptionList = document.getElementById('redemptionList');
+                if (result.redemptions && result.redemptions.length > 0) {
+                    let html = '';
+                    result.redemptions.forEach(redemption => {
+                        html += `
+                            <div class="redemption-card">
+                                <div class="redemption-header">
+                                    <span class="redemption-id">Request #${redemption.id}</span>
+                                    <span class="redemption-status ${redemption.status}">${redemption.status.toUpperCase()}</span>
+                                </div>
+                                <div class="redemption-details">
+                                    <div class="redemption-detail">
+                                        <span class="detail-label">User</span>
+                                        <span class="detail-value">${escapeHtml(redemption.username)}</span>
+                                    </div>
+                                    <div class="redemption-detail">
+                                        <span class="detail-label">Phone</span>
+                                        <span class="detail-value">${escapeHtml(redemption.phone)}</span>
+                                    </div>
+                                    <div class="redemption-detail">
+                                        <span class="detail-label">Points</span>
+                                        <span class="detail-value">${redemption.points}</span>
+                                    </div>
+                                    <div class="redemption-detail">
+                                        <span class="detail-label">Requested</span>
+                                        <span class="detail-value">${new Date(redemption.created_at).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                                ${redemption.admin_notes ? `
+                                    <div class="redemption-note">
+                                        <strong>Admin Notes:</strong> ${escapeHtml(redemption.admin_notes)}
+                                    </div>
+                                ` : ''}
+                                ${redemption.status === 'pending' ? `
+                                    <div class="redemption-actions">
+                                        <button onclick="handleRedemption(${redemption.id}, 'approve')" class="action-btn approve">
+                                            <span class="icon">✅</span> Approve
+                                        </button>
+                                        <button onclick="handleRedemption(${redemption.id}, 'reject')" class="action-btn reject">
+                                            <span class="icon">❌</span> Reject
+                                        </button>
+                                        <button onclick="handleRedemption(${redemption.id}, 'cancel')" class="action-btn cancel">
+                                            <span class="icon">🚫</span> Cancel
+                                        </button>
+                                    </div>
+                                ` : ''}
+                                <div class="redemption-history">
+                                    <div class="history-item">
+                                        <span>Status Changed:</span>
+                                        <span>${new Date(redemption.updated_at).toLocaleString()}</span>
+                                    </div>
+                                    ${redemption.admin_username ? `
+                                        <div class="history-item">
+                                            <span>Processed By:</span>
+                                            <span>${escapeHtml(redemption.admin_username)}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    redemptionList.innerHTML = html;
+                } else {
+                    redemptionList.innerHTML = '<p>No redemption requests found</p>';
+                }
+            } catch (error) {
+                showError('redemptionsError', 'Error loading redemptions: ' + error.message);
+            } finally {
+                hideLoading('redemptionsLoading');
+            }
+        }
+        
+        async function loadSettings() {
+            showLoading('settingsLoading');
+            try {
+                const response = await fetch('/admin/settings');
+                const result = await response.json();
+                
+                const referralStatus = result.settings.referral_program_active === 'true' ? 'Active' : 'Paused';
+                const referralButtonText = result.settings.referral_program_active === 'true' ? 'Pause Program' : 'Activate Program';
+                
+                document.getElementById('referralStatus').textContent = referralStatus;
+                document.getElementById('referralToggle').textContent = referralButtonText;
+            } catch (error) {
+                showError('settingsError', 'Error loading settings: ' + error.message);
+            } finally {
+                hideLoading('settingsLoading');
+            }
+        }
+        
+        async function searchUsers() {
+            const searchInput = document.getElementById('searchInput').value.trim();
+            if (!searchInput) {
+                showError('usersError', 'Please enter a phone number to search');
+                return;
+            }
+            
+            showLoading('usersLoading');
+            try {
+                const response = await fetch('/admin/users/search?phone=' + encodeURIComponent(searchInput));
+                const result = await response.json();
+                
+                const searchResults = document.getElementById('searchResults');
+                if (result.users && result.users.length > 0) {
+                    let html = '<h3>Search Results</h3><table><tr><th>Phone</th><th>Username</th><th>Points</th><th>Actions</th></tr>';
+                    result.users.forEach(user => {
+                        html += '<tr>';
+                        html += '<td>' + escapeHtml(user.phone) + '</td>';
+                        html += '<td>' + escapeHtml(user.username) + '</td>';
+                        html += '<td>' + user.points + '</td>';
+                        html += '<td><button onclick="deleteUser(\'' + user.phone + '\')">Delete</button></td>';
+                        html += '</tr>';
+                    });
+                    html += '</table>';
+                    searchResults.innerHTML = html;
+                } else {
+                    searchResults.innerHTML = '<p>No users found</p>';
+                }
+            } catch (error) {
+                showError('usersError', 'Error searching users: ' + error.message);
+            } finally {
+                hideLoading('usersLoading');
+            }
+        }
+        
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            loadUsers();
+        }
+        
+        async function deleteUser(phone) {
+            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                showLoading('usersLoading');
+                try {
+                    const response = await fetch('/admin/users/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ phone })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok && result.success) {
+                        showSuccess('usersSuccess', 'User deleted successfully');
+                        loadUsers();
+                    } else {
+                        showError('usersError', result.error || 'Error deleting user');
+                    }
+                } catch (error) {
+                    showError('usersError', 'Error deleting user: ' + error.message);
+                } finally {
+                    hideLoading('usersLoading');
+                }
+            }
+        }
+        
+        async function handleRedemption(id, action) {
+            let confirmMessage = '';
+            let notes = '';
+            
+            switch (action) {
+                case 'approve':
+                    confirmMessage = 'Are you sure you want to approve this redemption request?';
+                    break;
+                case 'reject':
+                    notes = prompt('Please enter a reason for rejection (this will be sent to the user):');
+                    if (notes === null) return; // User cancelled
+                    if (!notes.trim()) {
+                        showError('redemptionsError', 'Please provide a reason for rejection');
+                        return;
+                    }
+                    confirmMessage = 'Are you sure you want to reject this redemption request?';
+                    break;
+                case 'cancel':
+                    confirmMessage = 'Are you sure you want to cancel this redemption request?';
+                    break;
+            }
+
+            if (confirm(confirmMessage)) {
+                showLoading('redemptionsLoading');
+                try {
+                    const response = await fetch(`/admin/redemption/${action}/${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ notes })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        let successMessage = '';
+                        
+                        switch (action) {
+                            case 'approve':
+                                successMessage = 'Redemption approved and user has been notified';
+                                break;
+                            case 'reject':
+                                successMessage = 'Redemption rejected and user has been notified';
+                                break;
+                            case 'cancel':
+                                successMessage = 'Redemption cancelled successfully';
+                                break;
+                        }
+                        
+                        showSuccess('redemptionsSuccess', successMessage);
+                        loadRedemptions();
+                    } else {
+                        const error = await response.json();
+                        showError('redemptionsError', error.message || `Error ${action}ing redemption`);
+                    }
+                } catch (error) {
+                    showError('redemptionsError', `Error ${action}ing redemption: ${error.message}`);
+                } finally {
+                    hideLoading('redemptionsLoading');
+                }
+            }
+        }
+        
+        async function sendPromotionalMessage() {
+            const message = document.getElementById('promoMessage').value.trim();
+            if (!message) {
+                showError('promoError', 'Please enter a message');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to send this promotional message to all users?')) {
+                showLoading('promoLoading');
+                try {
+                    const response = await fetch('/admin/promotion/send', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ message })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok && result.success) {
+                        showSuccess('promoSuccess', 'Message sent successfully to ' + result.successCount + ' users');
+                        document.getElementById('promoMessage').value = '';
+                    } else {
+                        showError('promoError', result.error || 'Error sending message');
+                    }
+                } catch (error) {
+                    showError('promoError', 'Error sending message: ' + error.message);
+                } finally {
+                    hideLoading('promoLoading');
+                }
+            }
+        }
+        
+        async function toggleReferralProgram() {
+            showLoading('settingsLoading');
+            try {
+                const response = await fetch('/admin/settings/toggle-referral', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    showSuccess('settingsSuccess', result.message);
+                    loadSettings();
+                } else {
+                    showError('settingsError', result.error || 'Error toggling referral program');
+                }
+            } catch (error) {
+                showError('settingsError', 'Error toggling referral program: ' + error.message);
+            } finally {
+                hideLoading('settingsLoading');
+            }
+        }
+        
+        async function cleanupStatusBroadcast() {
+            if (confirm('Are you sure you want to remove all status@broadcast entries? This action cannot be undone.')) {
+                showLoading('settingsLoading');
+                try {
+                    const response = await fetch('/admin/cleanup/status-broadcast', {
+                        method: 'POST'
+                    });
+                    
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        showSuccess('settingsSuccess', result.message);
+                    } else {
+                        showError('settingsError', result.error || 'Error cleaning up database');
+                    }
+                } catch (error) {
+                    showError('settingsError', 'Error cleaning up database: ' + error.message);
+                } finally {
+                    hideLoading('settingsLoading');
+                }
+            }
+        }
+
+        async function optimizeDatabase() {
+            if (confirm('Are you sure you want to optimize the database? This may take a few minutes.')) {
+                showLoading('settingsLoading');
+                try {
+                    const response = await fetch('/admin/database/optimize', {
+                        method: 'POST'
+                    });
+                    
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        showSuccess('settingsSuccess', result.message);
+                        refreshStats();
+                    } else {
+                        showError('settingsError', result.error || 'Error optimizing database');
+                    }
+                } catch (error) {
+                    showError('settingsError', 'Error optimizing database: ' + error.message);
+                } finally {
+                    hideLoading('settingsLoading');
+                }
+            }
+        }
+
+        async function backupDatabase() {
+            if (confirm('Are you sure you want to create a database backup? This may take a few minutes.')) {
+                showLoading('settingsLoading');
+                try {
+                    const response = await fetch('/admin/database/backup', {
+                        method: 'POST'
+                    });
+                    
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        showSuccess('settingsSuccess', result.message);
+                        refreshStats();
+                    } else {
+                        showError('settingsError', result.error || 'Error creating database backup');
+                    }
+                } catch (error) {
+                    showError('settingsError', 'Error creating database backup: ' + error.message);
+                } finally {
+                    hideLoading('settingsLoading');
+                }
+            }
+        }
+
+        async function refreshStats() {
+            showLoading('settingsLoading');
+            try {
+                const response = await fetch('/admin/database/stats');
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    document.getElementById('dbSize').textContent = result.stats.database_size || 'N/A';
+                    document.getElementById('lastBackup').textContent = result.stats.last_backup ? new Date(result.stats.last_backup).toLocaleString() : 'Never';
+                    document.getElementById('lastOptimization').textContent = result.stats.last_optimization ? new Date(result.stats.last_optimization).toLocaleString() : 'Never';
+                } else {
+                    showError('settingsError', result.error || 'Error refreshing stats');
+                }
+            } catch (error) {
+                showError('settingsError', 'Error refreshing stats: ' + error.message);
+            } finally {
+                hideLoading('settingsLoading');
+            }
+        }
+
+        async function checkSystemHealth() {
+            showLoading('settingsLoading');
+            try {
+                const response = await fetch('/admin/system/health');
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    const dbConnection = document.getElementById('dbConnection');
+                    const whatsappConnection = document.getElementById('whatsappConnection');
+                    const paymentGateway = document.getElementById('paymentGateway');
+                    
+                    dbConnection.textContent = result.health.database ? 'Healthy' : 'Error';
+                    dbConnection.className = result.health.database ? 'health-value healthy' : 'health-value error';
+                    
+                    whatsappConnection.textContent = result.health.whatsapp ? 'Healthy' : 'Error';
+                    whatsappConnection.className = result.health.whatsapp ? 'health-value healthy' : 'health-value error';
+                    
+                    paymentGateway.textContent = result.health.payment ? 'Healthy' : 'Error';
+                    paymentGateway.className = result.health.payment ? 'health-value healthy' : 'health-value error';
+                    
+                    showSuccess('settingsSuccess', 'System health check completed');
+                } else {
+                    showError('settingsError', result.error || 'Error checking system health');
+                }
+            } catch (error) {
+                showError('settingsError', 'Error checking system health: ' + error.message);
+            } finally {
+                hideLoading('settingsLoading');
+            }
+        }
+
+        // Function to load dashboard statistics
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('/admin/stats');
+                const result = await response.json();
+                
+                if (result.stats) {
+                    document.getElementById('totalRevenue').textContent = 'KES ' + Math.round(result.stats.total_revenue);
+                    document.getElementById('totalTransactions').textContent = result.stats.total_transactions;
+                    document.getElementById('totalCustomers').textContent = result.stats.total_customers;
+                    document.getElementById('averageTransaction').textContent = 'KES ' + Math.round(result.stats.average_transaction);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+
+        function filterRedemptions() {
+            loadRedemptions();
+        }
+
+        function clearRedemptionFilters() {
+            document.getElementById('redemptionStatus').value = 'pending';
+            document.getElementById('redemptionDate').value = '';
+            loadRedemptions();
+        }
+
+        // Load stats when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardStats();
+            // Load initial tab data
+            showTab('users');
+            loadSettings();
+            refreshStats();
+            checkSystemHealth();
+        });
+    </script>
+</body>
+</html> 

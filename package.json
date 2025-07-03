@@ -1,0 +1,31 @@
+{
+  "name": "bingwa-bot",
+  "version": "1.0.0",
+  "description": "WhatsApp bot for data bundle management",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "deploy": "pm2 start ecosystem.config.js",
+    "stop": "pm2 stop ecosystem.config.js",
+    "restart": "pm2 restart ecosystem.config.js",
+    "logs": "pm2 logs",
+    "status": "pm2 status"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "whatsapp-web.js": "^1.16.6",
+    "qrcode-terminal": "^0.12.0",
+    "dotenv": "^10.0.0",
+    "express-session": "^1.17.2",
+    "body-parser": "^1.19.0",
+    "pm2": "^5.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
