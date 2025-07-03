@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bingwa Sokoni Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <script src="/admin/js/admin.js"></script>
+    <script src="/admin/js/admin-dashboard.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bingwa Sokoni Admin Dashboard</h1>
+            <div class="subtitle">Agent Management System</div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <p id="totalRevenue">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Transactions</h3>
+                <p id="totalTransactions">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Customers</h3>
+                <p id="totalCustomers">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Average Transaction</h3>
+                <p id="averageTransaction">Loading...</p>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('users')">Users</button>
+            <button class="tab" onclick="showTab('redemptions')">Redemptions</button>
+            <button class="tab" onclick="showTab('promotions')">Promotions</button>
+            <button class="tab" onclick="showTab('settings')">Settings</button>
+            <button class="tab" onclick="showTab('duplicates')">Duplicates</button>
+        </div>
+        
+        <div class="content">
+            <div id="users" class="tab-content active">
+                <h2>All Users</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by phone number...">
+                    <button onclick="searchUsers()">Search</button>
+                    <button onclick="clearSearch()">Clear</button>
+                </div>
+                <div id="searchResults"></div>
+                <div id="allUsers">
+                    <!-- Users will be loaded here -->
+                </div>
+                <div id="usersLoading" class="loading">Loading users...</div>
+                <div id="usersError" class="error"></div>
+            </div>
+            
+            <div id="redemptions" class="tab-content">
+                <h2>Redemption Requests</h2>
+                <div class="redemption-filters">
+                    <select id="redemptionStatus">
+                        <option value="pending">Pending Requests</option>
+                        <option value="approved">Approved Requests</option>
+                        <option value="rejected">Rejected Requests</option>
+                        <option value="all">All Requests</option>
+                    </select>
+                    <input type="date" id="redemptionDate">
+                    <button onclick="clearRedemptionFilters()" class="action-btn">Clear Filters</button>
+                </div>
+                <div id="redemptionList">
+                    <!-- Redemptions will be loaded here -->
+                </div>
+                <div id="redemptionsLoading" class="loading">Loading redemptions...</div>
+                <div id="redemptionsError" class="error"></div>
+            </div>
+            
+            <div id="promotions" class="tab-content">
+                <h2>Send Promotional Message</h2>
+                <textarea id="promoMessage" placeholder="Enter your message here..." style="width: 100%; min-height: 100px; margin-bottom: 10px;"></textarea>
+                <button onclick="sendPromotionalMessage()">Send to All Users</button>
+                <div id="promoLoading" class="loading">Sending message...</div>
+                <div id="promoError" class="error"></div>
+            </div>
+            
+            <div id="settings" class="tab-content">
+                <h2>System Settings</h2>
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>Referral Program</h3>
+                        <div class="status-indicator">
+                            <span class="status-label">Current Status:</span>
+                            <span id="referralStatus" class="status-value">Loading...</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="referralToggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <div class="setting-description">
+                            Controls whether users can earn points from referrals. When paused, no new referral points will be awarded.
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Database Maintenance</h3>
+                        <div class="maintenance-actions">
+                            <button onclick="cleanupStatusBroadcast()" class="action-btn cleanup">
+                                <span class="icon">🗑️</span>
+                                Clean Status Broadcast
+                            </button>
+                            <button onclick="optimizeDatabase()" class="action-btn optimize">
+                                <span class="icon">⚡</span>
+                                Optimize Database
+                            </button>
+                            <button onclick="backupDatabase()" class="action-btn backup">
+                                <span class="icon">💾</span>
+                                Create Backup
+                            </button>
+                        </div>
+                        <div class="setting-description">
+                            Database maintenance tools to keep your system running smoothly.
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>System Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Database Size</span>
+                                <span id="databaseSize" class="stat-value">Loading...</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Last Backup</span>
+                                <span id="lastBackup" class="stat-value">Loading...</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Last Optimization</span>
+                                <span id="lastOptimization" class="stat-value">Loading...</span>
+                            </div>
+                        </div>
+                        <button id="refreshStats" class="action-btn refresh">
+                            <span class="icon">🔄</span>
+                            Refresh Stats
+                        </button>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>System Health</h3>
+                        <div class="health-indicators">
+                            <div class="health-item">
+                                <span class="health-label">Database Connection</span>
+                                <span id="databaseHealth" class="health-value">Checking...</span>
+                            </div>
+                            <div class="health-item">
+                                <span class="health-label">WhatsApp Connection</span>
+                                <span id="whatsappHealth" class="health-value">Checking...</span>
+                            </div>
+                            <div class="health-item">
+                                <span class="health-label">Payment Gateway</span>
+                                <span id="paymentHealth" class="health-value">Checking...</span>
+                            </div>
+                        </div>
+                        <button id="checkHealth" class="action-btn health">
+                            <span class="icon">🏥</span>
+                            Check Health
+                        </button>
+                    </div>
+                </div>
+                <div id="settingsLoading" class="loading">Updating settings...</div>
+                <div id="settingsError" class="error"></div>
+            </div>
+
+            <div id="duplicates" class="tab-content">
+                <h2>Duplicate Accounts</h2>
+                <div class="duplicates-filters">
+                    <input type="text" id="duplicateSearch" placeholder="Search by phone number...">
+                    <button onclick="searchDuplicates()">Search</button>
+                    <button onclick="clearDuplicateSearch()">Clear</button>
+                </div>
+                <div id="duplicatesList">
+                    <!-- Duplicate accounts will be loaded here -->
+                </div>
+                <div id="duplicatesLoading" class="loading">Loading duplicates...</div>
+                <div id="duplicatesError" class="error"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2024 Emmkash Tech. All rights reserved.
+        </div>
+    </div>
+</body>
+</html> 
